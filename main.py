@@ -17,8 +17,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PUT"],
-    # allow_headers=[ "Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "accept","Content-Type" ],
-    allow_headers=["*"],
+    allow_headers=[ "Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "accept","Content-Type" ]
 )
 
 app.include_router(router_qr)
