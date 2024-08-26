@@ -15,7 +15,6 @@ async def get_qr(unique_key: str):
 
 @router_qr.post("/add_qr")
 async def add_qr( info: Qr_code , res: Response):
-    res.headers["Access-Control-Allow-Origin"] = "*"
     x = S3Client()
     info.unique_key = create_unique_key()
     response = await Repository.create_qr(info)
