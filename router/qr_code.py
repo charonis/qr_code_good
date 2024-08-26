@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, Response
 from shemas import Qr_code
 from repository import Repository, S3Client
 from fastapi.responses import Response , RedirectResponse
@@ -14,10 +14,12 @@ async def get_qr(unique_key: str):
     
 
 @router_qr.post("/add_qr")
-async def add_qr( info: Qr_code ):
+async def add_qr( info: Qr_code , res: Response):
+    res.headers["Access-Control-Allow-Origin"] = "http://localhost:5173/delete_qr"
     x = S3Client()
     info.unique_key = create_unique_key()
     response = await Repository.create_qr(info)
+    
     await x.upload_qr_file(info.unique_key)
     return info.unique_key
    

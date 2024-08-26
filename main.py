@@ -10,7 +10,9 @@ app = FastAPI(title="qr-code")
 
 origins = [
     "https://qr-code-front-three.vercel.app",
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://localhost:5173",
+    
 ]
 
 app.add_middleware(
