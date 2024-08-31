@@ -7,37 +7,83 @@ from config import settings
 from utils import qr
 from sqlalchemy import select
 
+# class Repository:
+    
+#     @classmethod
+#     async def create_qr(cls, info_qr: Qr_code ):
+#         async with session_async() as session:
+#             info_qr_dict = info_qr.model_dump()
+#             date = User(**info_qr_dict)
+#             session.add(date)
+#             await session.commit()
+#             return {f"your unique_key = {info_qr_dict["unique_key"]}, your will get a qr_code by this unique_key"}
+        
+#     @classmethod
+#     async def delete_qr(cls, name:str):
+#         async with session_async() as session:
+#             quary = (
+#                 select(User).filter(User.unique_key == name)
+#             )
+#             response = await session.execute(quary)
+#             # print(response)
+#             await session.delete(response.scalars().first())
+#             await session.commit()
+            
+#     @classmethod
+#     async def get_date_user(cls, name:str):
+#         async with session_async() as session:
+#             quary = (
+#                 select(User).filter(User.unique_key == name)
+#             )
+#             response = await session.execute(quary)
+#             res = response.scalars().all()
+#             return Qr_code.model_validate(res[0],from_attributes=True)
+
 class Repository:
     
     @classmethod
-    async def create_qr(cls, info_qr: Qr_code ):
+    async def create_qr(cls, info_qr: Qr_code):
         async with session_async() as session:
-            info_qr_dict = info_qr.model_dump()
-            date = User(**info_qr_dict)
-            session.add(date)
-            await session.commit()
-            return {f"your unique_key = {info_qr_dict["unique_key"]}, your will get a qr_code by this unique_key"}
-        
+            try:
+                info_qr_dict = info_qr.model_dump()
+                date = User(**info_qr_dict)
+                session.add(date)
+                await session.commit()
+                return {f"your unique_key = {info_qr_dict['unique_key']}, you will get a qr_code by this unique_key"}
+            except Exception as e:
+                await session.rollback()  # откат транзакции при ошибке
+                print(f"Error during QR creation: {e}")
+                raise e
+    
     @classmethod
-    async def delete_qr(cls, name:str):
+    async def delete_qr(cls, name: str):
         async with session_async() as session:
-            quary = (
-                select(User).filter(User.unique_key == name)
-            )
-            response = await session.execute(quary)
-            # print(response)
-            await session.delete(response.scalars().first())
-            await session.commit()
-            
+            try:
+                query = select(User).filter(User.unique_key == name)
+                response = await session.execute(query)
+                user = response.scalars().first()
+                if user:
+                    await session.delete(user)
+                    await session.commit()
+            except Exception as e:
+                await session.rollback()
+                print(f"Error during QR deletion: {e}")
+                raise e
+    
     @classmethod
-    async def get_date_user(cls, name:str):
+    async def get_date_user(cls, name: str):
         async with session_async() as session:
-            quary = (
-                select(User).filter(User.unique_key == name)
-            )
-            response = await session.execute(quary)
-            res = response.scalars().all()
-            return Qr_code.model_validate(res[0],from_attributes=True)
+            try:
+                query = select(User).filter(User.unique_key == name)
+                response = await session.execute(query)
+                res = response.scalars().first()
+                if res:
+                    return Qr_code.model_validate(res, from_attributes=True)
+                else:
+                    return None  # Если пользователь не найден
+            except Exception as e:
+                print(f"Error during getting user data: {e}")
+                raise e
             
 class S3Client:
     def __init__(self) -> None:
