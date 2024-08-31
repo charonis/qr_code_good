@@ -1,11 +1,11 @@
-from datebase import session_async
+from datebase import session_async, engine
 from shemas import Qr_code
 from models import User
 from aiobotocore.session import get_session
 from contextlib import asynccontextmanager
 from config import settings
 from utils import qr
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 class Repository:
     
@@ -38,6 +38,14 @@ class Repository:
             response = await session.execute(quary)
             res = response.scalars().all()
             return Qr_code.model_validate(res[0],from_attributes=True)
+        
+    @classmethod
+    async def test_bd_aa():
+        async with engine.connect() as conn:
+            res = await conn.execute(text("SELECT 1,2,3 UNION select 4,5,6"))
+            return res.first()
+
+
 
 
             

@@ -38,3 +38,8 @@ async def get_date(unique_key:str):
     return response.model_dump()
 
 
+@router_qr.get("/test_bd")
+async def test_bd():
+    return await Repository.test_bd_aa()
+
+
