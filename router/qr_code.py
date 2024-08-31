@@ -17,7 +17,7 @@ async def get_qr(unique_key: str):
 async def add_qr( info: Qr_code , res: Response):
     x = S3Client()
     info.unique_key = create_unique_key()
-    response = await Repository.create_qr(info)
+    await Repository.create_qr(info)
     
     await x.upload_qr_file(info.unique_key)
     return info.unique_key
