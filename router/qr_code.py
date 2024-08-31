@@ -40,7 +40,9 @@ async def get_date(unique_key:str):
 
 @router_qr.get("/test_bd")
 async def test_bd():
-    response = await Repository.test_bd_aa()
+    x = Response()
+    
+    response = await x.test_bd_aa()
     return response
 
 
