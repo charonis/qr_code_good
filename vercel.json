@@ -3,7 +3,7 @@
   "builds": [
     {
       "config": {
-        "runtime": "python3.12.1"
+        "runtime": "python3.12"
       }
     }
   ],
